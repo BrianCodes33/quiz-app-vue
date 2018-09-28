@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <title>Quiz APP</title>
+</head>
+<body>
+  <div id="app">
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">Welcome to my quiz app</h1>
+        <p class="lead">Let's test your knowledge</p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+        <h2 v-bind:class="[isTrue ? trueClass : wrongClass]">{{ showAnswer }}</h2>
+        <ul class="list-group list-group-flush">
+        <li class="list-group-item" v-for="(result,idx) in results">
+          {{ result.question }}
+          <button class="btn btn-sm btn-primary" @click="checkTrue(result)">True</button>
+          <button class="btn btn-sm btn-info" @click="checkFalse(result)">False</button>
+        </li>
+      </ul>
+      </div>
+    </div>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>
+
+<script>
+  new Vue({
+    el: "#app",
+    data: {
+      endpoint: "https://opentdb.com/api.php?amount=20&category=9&difficulty=easy&type=boolean",
+      results: '',
+      userAnswer: null,
+      showAnswer: '',
+      isTrue: true,
+      trueClass: 'text-success',
+      wrongClass: 'text-danger'
+    },
+    created() {
+      fetch(this.endpoint)
+        .then(res => res.json())
+        .then(data => {
+          console.log(data)
+          this.results = data.results
+      })
+    },
+    methods: {
+      checkTrue(result) {
+        this.userAnswer = "True"
+        this.isTrue = true
+        if(this.userAnswer === result.correct_answer) {
+          this.isTrue = true
+          this.showAnswer = 'You answered correctly'
+        } else if(this.userAnswer !== result.correct_answer) {            
+          this.isTrue = false
+          this.showAnswer = 'You answered wrong'
+        }
+      },
+      checkFalse(result) {
+        this.userAnswer = "False"
+        if(this.userAnswer === result.correct_answer) {
+          this.isTrue = true
+          this.showAnswer = 'You answered correctly'
+        } else if (this.userAnswer !== result.correct_answer) {
+          this.isTrue = false
+          this.showAnswer = 'You answered wrong'
+        }
+      }
+    }
+  })
+
+</script>
